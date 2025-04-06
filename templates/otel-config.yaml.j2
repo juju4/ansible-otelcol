@@ -89,19 +89,21 @@ exporters:
       localtime: false
     format: json
     # compression: zstd
+{% if otelcol_server_url is defined and otelcol_server_url != None %}
   otlphttp/openobserve_default:
     endpoint: {{ otelcol_server_url }}
-{% if otelcol_auth_key is defined and otelcol_auth_key != None and otelcol_auth_key | length > 0 %}
+{%     if otelcol_auth_key is defined and otelcol_auth_key != None and otelcol_auth_key | length > 0 %}
     headers:
       Authorization: "Basic {{ otelcol_auth_key }}"
-{% endif %}
+{%     endif %}
   otlphttp/openobserve_journald:
     endpoint: {{ otelcol_server_url }}
     headers:
-{% if otelcol_auth_key is defined and otelcol_auth_key != None and otelcol_auth_key | length > 0 %}
+{%     if otelcol_auth_key is defined and otelcol_auth_key != None and otelcol_auth_key | length > 0 %}
       Authorization: "Basic {{ otelcol_auth_key }}"
-{% endif %}
+{%     endif %}
       stream-name: journald
+{% endif %}
 {% if otelcol_config_exporters %}
   {{ otelcol_config_exporters | to_nice_yaml(indent=2,sort_keys=False) | indent(2, False) }}
 {% endif %}
@@ -112,15 +114,30 @@ service:
     metrics:
       receivers: [hostmetrics]
       processors: [resourcedetection/system, memory_limiter, batch]
-      exporters: [otlphttp/openobserve_default]
+      exporters:
+{% if otelcol_server_url is defined and otelcol_server_url != None %}
+        - otlphttp/openobserve_default
+{% else %}
+        - file/debug
+{% endif %}
     logs:
       receivers: [filelog/std]
       processors: [resourcedetection/system, memory_limiter, batch]
-      exporters: [otlphttp/openobserve_default]
+      exporters:
+{% if otelcol_server_url is defined and otelcol_server_url != None %}
+        - otlphttp/openobserve_default
+{% else %}
+        - file/debug
+{% endif %}
     logs/journald:
       receivers: [journald]
       processors: [resourcedetection/system, memory_limiter, batch]
-      exporters: [otlphttp/openobserve_journald]
+      exporters:
+{% if otelcol_server_url is defined and otelcol_server_url != None %}
+        - otlphttp/openobserve_journald
+{% else %}
+        - file/debug
+{% endif %}
 {% if otelcol_config_service_pipelines %}
     {{ otelcol_config_service_pipelines | to_nice_yaml(indent=2,sort_keys=False) | indent(4, False) }}
 {% endif %}
