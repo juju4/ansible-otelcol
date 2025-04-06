@@ -19,6 +19,7 @@ otelcol_config_processors:
 otelcol_config_exporters:
 otelcol_config_service_pipelines:
 
+otelcol_cgroups_restriction_enable: true
 # systemd network restriction?
 openobserve_webproxy_ip: ''
 
