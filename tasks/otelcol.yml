@@ -49,7 +49,7 @@
 
 - name: Retrieve openobserve auth key
   ansible.builtin.import_tasks: openobserve-auth-key.yml
-  when: >
+  when:
     - otelcol_auth_key_retrieve | bool
     - otelcol_server_ansible_host is defined and
       otelcol_server_ansible_host != None
