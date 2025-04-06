@@ -69,6 +69,11 @@
   notify:
     - Restart otel-collector
 
+- name: Ensure systemd package is present
+  ansible.builtin.package:
+    name: systemd
+    state: present
+
 - name: Configure Otel collector systemd unit
   ansible.builtin.template:
     src: systemd-otel-collector.service.j2
