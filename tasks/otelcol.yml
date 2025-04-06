@@ -120,6 +120,7 @@
     name: otel-collector
     state: started
     enabled: true
+  when: not is_container | bool
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
