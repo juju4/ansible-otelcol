@@ -22,7 +22,7 @@ otelcol_config_service_pipelines:
 # To openobserve server?
 # otelcol_server_url: https://SERVER/api/default/
 otelcol_auth_key_retrieve: false
-# otelcol_auth_key:
+otelcol_auth_key:
 otelcol_get_certificate: false
 openobserve_root_user_email:
 openobserve_root_user_pass:
