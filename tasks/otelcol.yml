@@ -10,9 +10,7 @@
     name: "{{ otelcol_user }}"
     state: present
     system: true
-    groups:
-      - systemd-journal
-      - "{{ otelcol_user }}"
+    groups: "{{ otelcol_user_groups }}"
     append: yes
 
 - name: Download

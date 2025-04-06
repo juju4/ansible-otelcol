@@ -7,6 +7,11 @@
     https_proxy: "{{ lookup('env', 'https_proxy') }}"
     no_proxy: "{{ lookup('env', 'no_proxy') }}"
   remote_user: root
+  vars:
+    otelcol_user_groups:
+      # no systemd in container
+      # - systemd-journal
+      - "{{ otelcol_user }}"
   pre_tasks:
     - name: Ubuntu | Install python3
       ansible.builtin.raw: test -e /usr/bin/python3 || (apt -y update && apt install -y python3-minimal)

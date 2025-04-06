@@ -5,6 +5,9 @@ otelcol_version: 0.122.0
 otelcol_hash: 'sha256:22a053fc960ca5e1b936a3e8b3060322ff0bcf04ae14ec46d77f40c8d495a322'
 otelcol_config_template: otel-config.yaml
 otelcol_user: _otel
+otelcol_user_groups:
+  - systemd-journal
+  - "{{ otelcol_user }}"
 
 otelcol_filelog_include: [ /var/log/**log ]
 otelcol_debug_enable: false
