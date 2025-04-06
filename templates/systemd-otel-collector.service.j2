@@ -59,7 +59,7 @@ RestrictAddressFamilies=AF_INET AF_INET6
 RestrictAddressFamilies=~AF_UNIX
 
 IPAccounting=yes
-{% if otelcol_webproxy_ip | string %}
+{% if otelcol_webproxy_ip is defined and otelcol_webproxy_ip | string %}
 # upstream communication can be limited to proxy
 # but must be able to receive logs too...
 # IPAddressAllow={{ otelcol_webproxy_ip }}
