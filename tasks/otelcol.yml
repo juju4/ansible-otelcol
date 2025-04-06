@@ -1,0 +1,140 @@
+---
+
+- name: Ensure otelcol group exists
+  ansible.builtin.group:
+    name: "{{ otelcol_user }}"
+    state: present
+
+- name: Ensure otelcol user exists
+  ansible.builtin.user:
+    name: "{{ otelcol_user }}"
+    state: present
+    system: true
+    groups:
+      - systemd-journal
+      - "{{ otelcol_user }}"
+    append: yes
+
+- name: Download
+  block:
+    - name: Download Otel collector
+      ansible.builtin.get_url:
+        url: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelcol_version }}/otelcol-contrib_{{ otelcol_version }}_{{ ansible_system | lower }}_{{ otelcol_arch }}.tar.gz"
+        dest: "{{ install_archives }}/otelcol-contrib.tar.gz"
+        mode: '0600'
+        owner: root
+        checksum: "{{ otelcol_hash | default(omit) }}"
+  rescue:
+    - name: Download Otel collector from orchestrator
+      ansible.builtin.get_url:
+        url: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelcol_version }}/otelcol-contrib_{{ otelcol_version }}_{{ ansible_system | lower }}_{{ otelcol_arch }}.tar.gz"
+        dest: "/tmp/otelcol-contrib-{{ otelcol_version }}.tar.gz"
+        mode: '0644'
+        checksum: "{{ otelcol_hash | default(omit) }}"
+      connection: local
+    - name: Copy Otel collector to target
+      ansible.builtin.copy:
+        src: "/tmp/otelcol-contrib-{{ otelcol_version }}.tar.gz"
+        dest: "{{ install_archives }}/otelcol-contrib.tar.gz"
+        mode: '0600'
+        owner: root
+
+- name: Unarchive Otel collector
+  ansible.builtin.unarchive:
+    src: "{{ install_archives }}/otelcol-contrib.tar.gz"
+    dest: "/usr/local/bin"
+    mode: '0755'
+    owner: root
+    remote_src: true
+    # does not work with update
+    # creates: /usr/local/bin/otelcol-contrib
+
+- name: Retrieve openobserve auth key
+  ansible.builtin.import_tasks: openobserve-auth-key.yml
+  when: >
+    - otelcol_auth_key_retrieve | bool
+    - openobserve_root_user_email is defined
+    - openobserve_root_user_pass is defined
+    - otelcol_auth_key is not defined or
+    otelcol_auth_key == None or
+    not otelcol_auth_key | string
+
+- name: Configure Otel collector
+  ansible.builtin.template:
+    src: "{{ otelcol_config_template }}.j2"
+    dest: /etc/otel-config.yaml
+    mode: '0640'
+    owner: root
+    group: "{{ otelcol_user }}"
+    validate: 'otelcol-contrib validate --config=%s'
+    backup: "{{ otelcol_backup | default(true) }}"
+  notify:
+    - Restart otel-collector
+
+- name: Configure Otel collector systemd unit
+  ansible.builtin.template:
+    src: systemd-otel-collector.service.j2
+    dest: /etc/systemd/system/otel-collector.service
+    mode: '0644'
+    owner: root
+  notify:
+    - Reload systemd
+    - Restart otel-collector
+
+- name: Ensure logs are readable by collector with acl
+  ansible.posix.acl:
+    path: /var/log
+    entity: "{{ otelcol_user }}"
+    etype: user
+    permissions: rx
+    state: present
+    recursive: true
+
+- name: Server certificate
+  when:
+    - otelcol_get_certificate | bool
+    - otelcol_server_crt_filepath is defined
+    - otelcol_server_crt_filepath | string
+  block:
+    - name: Fetch server certificate
+      ansible.builtin.fetch:
+        src: "{{ otelcol_server_crt_filepath }}"
+        dest: /tmp/
+        flat: true
+      delegate_to: "{{ otelcol_server_ansible_host }}"
+    - name: Add to agent system
+      ansible.builtin.copy:
+        src: "/tmp/{{ otelcol_server_crt_filepath | basename }}"
+        dest: "/usr/share/ca-certificates/{{ otelcol_server_crt_filepath | basename | regex_replace('.crt', '-otelcol-server.crt') }}"
+        mode: '0644'
+        owner: root
+      notify:
+        - Add to /etc/ca-certificates.conf
+        - Update-ca-certificates
+
+- name: Ensure Otel collector service is started and enabled
+  ansible.builtin.service:
+    name: otel-collector
+    state: started
+    enabled: true
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Pause for 15 seconds for service to start
+  ansible.builtin.pause:
+    seconds: 15
+
+- name: Ensure Otel collector service has no errors
+  ansible.builtin.command:
+    # cmd: journalctl -u otel-collector -l --no-pager --since "1 hour ago"
+    cmd: journalctl -u otel-collector -l --no-pager --since "10 minutes ago"
+  become: yes
+  register: otel_journal
+  changed_when: false
+
+- name: Validate Otel journal
+  ansible.builtin.assert:
+    that:
+      - "'Unauthenticated' not in otel_journal.stdout"
+      - "'Permission denied' not in otel_journal.stdout"

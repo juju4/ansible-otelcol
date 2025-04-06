@@ -1,0 +1,23 @@
+---
+galaxy_info:
+  role_name: otelcol
+  author: juju4
+  description: Setup OpenTelemetry collector
+  license: BSD
+  min_ansible_version: '1.9'
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - jammy
+        - focal
+        - bionic
+  galaxy_tags:
+    - system
+    - monitoring
+    - logs
+dependencies: []
+collections:
+  - ansible.posix
