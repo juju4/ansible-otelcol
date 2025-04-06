@@ -51,13 +51,11 @@
   ansible.builtin.import_tasks: openobserve-auth-key.yml
   when:
     - otelcol_auth_key_retrieve | bool
-    - otelcol_server_ansible_host is defined and
-      otelcol_server_ansible_host != None
+    - (otelcol_server_ansible_host is defined and
+      otelcol_server_ansible_host != None)
     - openobserve_root_user_email is defined
     - openobserve_root_user_pass is defined
-    - otelcol_auth_key is not defined or
-    otelcol_auth_key == None or
-    not otelcol_auth_key | string
+    - (otelcol_auth_key is not defined or otelcol_auth_key == None or not otelcol_auth_key | string)
 
 - name: Configure Otel collector
   ansible.builtin.template:
