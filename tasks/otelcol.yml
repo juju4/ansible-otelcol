@@ -136,9 +136,11 @@
   become: yes
   register: otel_journal
   changed_when: false
+  when: not is_container | bool
 
 - name: Validate Otel journal
   ansible.builtin.assert:
     that:
       - "'Unauthenticated' not in otel_journal.stdout"
       - "'Permission denied' not in otel_journal.stdout"
+  when: not is_container | bool
