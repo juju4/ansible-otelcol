@@ -115,3 +115,10 @@ jobs:
           sudo cat /etc/otel-config.yaml
         if: ${{ always() }}
         continue-on-error: true
+      - name: After script - file/debug
+        run: |
+          set -x
+          sudo bash -c 'ls -l /tmp/systemd-private-*-otel-collector.service-*/tmp/otel-debug.log'
+          sudo bash -c 'tail -500 /tmp/systemd-private-*-otel-collector.service-*/tmp/otel-debug.log'
+        if: ${{ always() }}
+        continue-on-error: true
