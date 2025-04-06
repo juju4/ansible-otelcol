@@ -4,13 +4,13 @@ receivers:
   # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/journaldreceiver
   journald:
     directory: /var/log/journal
-{% if openobserve_agent_journald_extras %}
-    {{ openobserve_agent_journald_extras | to_nice_yaml(indent=0,sort_keys=False) | indent(4, False) }}
+{% if otelcol_journald_extras %}
+    {{ otelcol_journald_extras | to_nice_yaml(indent=0,sort_keys=False) | indent(4, False) }}
 {% endif %}
   # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/filelogreceiver
   filelog/std:
     include:
-      {{ openobserve_agent_filelog_include | to_nice_yaml(indent=0,sort_keys=False) | indent(6, False) }}
+      {{ otelcol_filelog_include | to_nice_yaml(indent=0,sort_keys=False) | indent(6, False) }}
     # start_at: beginning
     include_file_path: true
   hostmetrics:
@@ -26,12 +26,12 @@ receivers:
       paging:
       processes:
       # process: # a bug in the process scraper causes the collector to throw errors so disabling it for now
-{% if openobserve_agent_config_receivers %}
-  {{ openobserve_agent_config_receivers | to_nice_yaml(indent=2,sort_keys=False) | indent(2, False) }}
+{% if otelcol_config_receivers %}
+  {{ otelcol_config_receivers | to_nice_yaml(indent=2,sort_keys=False) | indent(2, False) }}
 {% endif %}
 
 processors:
-{% if openobserve_agent_sampling_enable | bool %}
+{% if otelcol_sampling_enable | bool %}
   # https://opentelemetry.io/docs/concepts/sampling/
   # https://opentelemetry.io/blog/2022/tail-sampling/
   tail_sampling:
@@ -62,8 +62,8 @@ processors:
   batch:
     send_batch_size: 10000
     timeout: 10s
-{% if openobserve_agent_config_processors %}
-  {{ openobserve_agent_config_processors | to_nice_yaml(indent=2,sort_keys=False) | indent(2, False) }}
+{% if otelcol_config_processors %}
+  {{ otelcol_config_processors | to_nice_yaml(indent=2,sort_keys=False) | indent(2, False) }}
 {% endif %}
 
 extensions:
@@ -71,7 +71,7 @@ extensions:
 
 # https://openobserve.ai/docs/ingestion/logs/otlp/
 exporters:
-{% if openobserve_agent_debug_enable | bool %}
+{% if otelcol_debug_enable | bool %}
   # https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/debugexporter/README.md
   debug:
     verbosity: detailed
@@ -90,20 +90,20 @@ exporters:
     format: json
     # compression: zstd
   otlphttp/openobserve_default:
-    endpoint: {{ openobserve_agent_server_url }}
-{% if openobserve_agent_auth_key is defined and openobserve_agent_auth_key != None and openobserve_agent_auth_key | length > 0 %}
+    endpoint: {{ otelcol_server_url }}
+{% if otelcol_auth_key is defined and otelcol_auth_key != None and otelcol_auth_key | length > 0 %}
     headers:
-      Authorization: "Basic {{ openobserve_agent_auth_key }}"
+      Authorization: "Basic {{ otelcol_auth_key }}"
 {% endif %}
   otlphttp/openobserve_journald:
-    endpoint: {{ openobserve_agent_server_url }}
+    endpoint: {{ otelcol_server_url }}
     headers:
-{% if openobserve_agent_auth_key is defined and openobserve_agent_auth_key != None and openobserve_agent_auth_key | length > 0 %}
-      Authorization: "Basic {{ openobserve_agent_auth_key }}"
+{% if otelcol_auth_key is defined and otelcol_auth_key != None and otelcol_auth_key | length > 0 %}
+      Authorization: "Basic {{ otelcol_auth_key }}"
 {% endif %}
       stream-name: journald
-{% if openobserve_agent_config_exporters %}
-  {{ openobserve_agent_config_exporters | to_nice_yaml(indent=2,sort_keys=False) | indent(2, False) }}
+{% if otelcol_config_exporters %}
+  {{ otelcol_config_exporters | to_nice_yaml(indent=2,sort_keys=False) | indent(2, False) }}
 {% endif %}
 
 service:
@@ -121,6 +121,6 @@ service:
       receivers: [journald]
       processors: [resourcedetection/system, memory_limiter, batch]
       exporters: [otlphttp/openobserve_journald]
-{% if openobserve_agent_config_service_pipelines %}
-    {{ openobserve_agent_config_service_pipelines | to_nice_yaml(indent=2,sort_keys=False) | indent(4, False) }}
+{% if otelcol_config_service_pipelines %}
+    {{ otelcol_config_service_pipelines | to_nice_yaml(indent=2,sort_keys=False) | indent(4, False) }}
 {% endif %}
