@@ -79,6 +79,11 @@
     - Reload systemd
     - Restart otel-collector
 
+- name: Ensure acl package is present
+  ansible.builtin.package:
+    name: acl
+    state: present
+
 - name: Ensure logs are readable by collector with acl
   ansible.posix.acl:
     path: /var/log
