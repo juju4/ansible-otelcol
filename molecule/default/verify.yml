@@ -79,7 +79,7 @@
     - name: Validate no errors
       ansible.builtin.assert:
         that:
-          - "'ERROR' in errors.stdout"
+          - "'ERROR' not in errors.stdout"
       when:
         - not is_container|bool
 
@@ -92,6 +92,8 @@
     - name: Validate no errors
       ansible.builtin.assert:
         that:
-          - "'ERROR' in errors.stdout"
+          - "'ERROR' not in errors.stdout"
+          - "'Unauthenticated' not in errors.stdout"
+          - "'Permission denied' not in errors.stdout"
       when:
         - not is_container|bool
