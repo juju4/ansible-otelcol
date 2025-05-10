@@ -8,6 +8,10 @@
   ansible.builtin.set_fact:
     otelcol_arch: arm64
   when: ansible_architecture == 'aarch64'
+- name: Armv7l arch
+  ansible.builtin.set_fact:
+    otelcol_arch: armv7
+  when: ansible_architecture == 'armv7l'
 - name: Debug
   ansible.builtin.debug:
     var: "{{ item }}"
