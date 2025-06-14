@@ -29,7 +29,8 @@
         dest: "/tmp/otelcol-contrib-{{ otelcol_version }}.tar.gz"
         mode: '0644'
         checksum: "{{ otelcol_hash | default(omit) }}"
-      connection: local
+      delegate_to: localhost
+      become: false
     - name: Copy Otel collector to target
       ansible.builtin.copy:
         src: "/tmp/otelcol-contrib-{{ otelcol_version }}.tar.gz"
