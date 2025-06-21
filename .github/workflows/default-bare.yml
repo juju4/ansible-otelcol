@@ -123,6 +123,6 @@ jobs:
         run: |
           set -x
           sudo bash -c 'ls -l /tmp/systemd-private-*-otel-collector.service-*/tmp/otel*-debug.log'
-          sudo bash -c 'tail -500 /tmp/systemd-private-*-otel-collector.service-*/tmp/otel*-debug.log'
+          sudo bash -c 'tail -n500 /tmp/systemd-private-*-otel-collector.service-*/tmp/otel*-debug.log'
         if: ${{ always() }}
         continue-on-error: true
