@@ -1,0 +1,28 @@
+---
+# dl_url
+# dl_dst
+# dl_mode
+# dl_hash
+
+- name: Download
+  block:
+    - name: Download {{ dl_url | basename }}
+      ansible.builtin.get_url:
+        url: "{{ dl_url }}"
+        dest: "{{ dl_dest }}"
+        mode: "{{ dl_mode | default('0600') }}"
+        owner: root
+        checksum: "{{ dl_hash | default(omit) }}"
+  rescue:
+    - name: Download from orchestrator {{ dl_url | basename }}
+      ansible.builtin.get_url:
+        url: "{{ dl_url }}"
+        dest: "/tmp/{{ dl_url | basename }}"
+        mode: '0600'
+        checksum: "{{ dl_hash | default(omit) }}"
+    - name: Copy to target
+      ansible.builtin.copy:
+        src: "/tmp/{{ dl_url | basename }}"
+        dest: "{{ dl_dest }}"
+        mode: "{{ dl_mode | default('0600') }}"
+        owner: root

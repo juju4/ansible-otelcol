@@ -13,30 +13,44 @@
     groups: "{{ otelcol_user_groups }}"
     append: yes
 
-- name: Download
-  block:
-    - name: Download Otel collector
-      ansible.builtin.get_url:
-        url: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelcol_version }}/otelcol-contrib_{{ otelcol_version }}_{{ ansible_system | lower }}_{{ otelcol_arch }}.tar.gz"
-        dest: "{{ install_archives }}/otelcol-contrib.tar.gz"
-        mode: '0600'
-        owner: root
-        checksum: "{{ otelcol_hash | default(omit) }}"
-  rescue:
-    - name: Download Otel collector from orchestrator
-      ansible.builtin.get_url:
-        url: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelcol_version }}/otelcol-contrib_{{ otelcol_version }}_{{ ansible_system | lower }}_{{ otelcol_arch }}.tar.gz"
-        dest: "/tmp/otelcol-contrib-{{ otelcol_version }}.tar.gz"
-        mode: '0644'
-        checksum: "{{ otelcol_hash | default(omit) }}"
-      delegate_to: localhost
-      become: false
-    - name: Copy Otel collector to target
-      ansible.builtin.copy:
-        src: "/tmp/otelcol-contrib-{{ otelcol_version }}.tar.gz"
-        dest: "{{ install_archives }}/otelcol-contrib.tar.gz"
-        mode: '0600'
-        owner: root
+- name: Set fact
+  ansible.builtin.set_fact:
+    otelcol_url: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelcol_version }}/otelcol-contrib_{{ otelcol_version }}_{{ ansible_system | lower }}_{{ otelcol_arch }}.tar.gz"
+    otelcol_pem: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelcol_version }}/otelcol-contrib_{{ otelcol_version }}_{{ ansible_system | lower }}_{{ otelcol_arch }}.tar.gz.pem"
+    otelcol_sig: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelcol_version }}/otelcol-contrib_{{ otelcol_version }}_{{ ansible_system | lower }}_{{ otelcol_arch }}.tar.gz.sig"
+
+- name: Download Otel collector
+  ansible.builtin.include_tasks: download.yml
+  vars:
+    dl_url: "{{ otelcol_url }}"
+    dl_dest: "{{ install_archives }}/otelcol-contrib.tar.gz"
+    dl_hash: "{{ otelcol_hash | default(omit) }}"
+
+- name: Download Otel collector pem
+  ansible.builtin.include_tasks: download.yml
+  vars:
+    dl_url: "{{ otelcol_pem }}"
+    dl_dest: "{{ install_archives }}/{{ otelcol_pem | basename }}"
+
+- name: Download Otel collector sig
+  ansible.builtin.include_tasks: download.yml
+  vars:
+    dl_url: "{{ otelcol_sig }}"
+    dl_dest: "{{ install_archives }}/{{ otelcol_sig| basename }}"
+
+- name: Verify Otel collector download
+  ansible.builtin.command:
+    cmd: |
+      cosign verify \
+        --certificate {{ install_archives }}/{{ otelcol_pem | basename }} \
+        --signature {{ install_archives }}/{{ otelcol_sig | basename }} \
+        --certificate-identity=https://github.com/open-telemetry/opentelemetry-collector-releases/.github/workflows/base-release.yaml@refs/tags/v{{ otelcol_version }} \
+        --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
+        {{ install_archives }}/otelcol-contrib.tar.gz
+  environment: "{{ otelcol_env | default(omit) }}"
+  changed_when: false
+  # FIXME!
+  failed_when: false
 
 - name: Unarchive Otel collector
   ansible.builtin.unarchive:

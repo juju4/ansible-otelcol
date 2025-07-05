@@ -1,16 +1,28 @@
 ---
 
-- name: X86_64 arch
+- name: Debian | X86_64 arch
   ansible.builtin.set_fact:
     otelcol_arch: amd64
-  when: ansible_architecture == 'x86_64'
+    cosign_arch: amd64
+  when:
+    - ansible_architecture == 'x86_64'
+    - ansible_os_family == 'Debian'
+- name: RedHat | X86_64 arch
+  ansible.builtin.set_fact:
+    otelcol_arch: amd64
+    cosign_arch: x86_64
+  when:
+    - ansible_architecture == 'x86_64'
+    - ansible_os_family == 'RedHat'
 - name: Aarch64 arch
   ansible.builtin.set_fact:
     otelcol_arch: arm64
+    cosign_arch: arm64
   when: ansible_architecture == 'aarch64'
 - name: Armv7l arch
   ansible.builtin.set_fact:
     otelcol_arch: armv7
+    cosign_arch: armhf
   when: ansible_architecture == 'armv7l'
 - name: Debug
   ansible.builtin.debug:
@@ -18,6 +30,18 @@
   loop:
     - ansible_system
     - ansible_architecture
+
+- name: Include variables
+  ansible.builtin.include_vars: "{{ lookup('ansible.builtin.first_found', params) }}"
+  vars:
+    params:
+      files:
+        - "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+        - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+        - '{{ ansible_distribution }}.yml'
+        - '{{ ansible_os_family }}.yml'
+      paths:
+        - 'vars'
 
 - name: Set fact is_container
   ansible.builtin.set_fact:
@@ -48,6 +72,16 @@
   when:
     - install_archives != '/tmp'
     - install_archives != '/var/tmp'
+
+- name: Download cosign
+  ansible.builtin.include_tasks: download.yml
+  vars:
+    dl_url: "{{ cosign_url }}"
+    dl_dest: "{{ install_archives }}/{{ cosign_url | basename }}"
+    dl_hash: "{{ cosign_hash | default(omit) }}"
+
+- name: Install cosign
+  ansible.builtin.include_tasks: cosign.yml
 
 - name: Import otelcol
   ansible.builtin.import_tasks: otelcol.yml

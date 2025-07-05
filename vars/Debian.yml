@@ -1,0 +1,3 @@
+---
+
+cosign_url: "https://github.com/sigstore/cosign/releases/download/v{{ cosign_version }}/cosign_{{ cosign_version }}{{ cosign_patchlevel | default('') }}_{{ cosign_arch }}.deb"

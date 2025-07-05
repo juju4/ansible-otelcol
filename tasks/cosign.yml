@@ -1,0 +1,20 @@
+---
+# cosign_version: v2.5.2
+
+- name: Debian | cosign
+  when:
+    - ansible_os_family == 'Debian'
+  block:
+    - name: Debian | Install cosign deb
+      ansible.builtin.apt:
+        deb: "{{ install_archives }}/{{ cosign_url | basename }}"
+        state: present
+
+- name: RedHat | cosign
+  when:
+    - ansible_os_family == 'RedHat'
+  block:
+    - name: RedHat Install cosign rpm
+      ansible.builtin.dnf:
+        name: "{{ install_archives }}/{{ cosign_url | basename }}"
+        state: present

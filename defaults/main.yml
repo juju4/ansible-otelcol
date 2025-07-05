@@ -40,5 +40,7 @@ openobserve_server_crt_filepath: /etc/ssl/certs/OOSERVER.crt
 
 otelcol_errors_validation: true
 
+cosign_version: 2.5.2
+# cosign_hash:  # depending on architecture
 is_container: false
 install_archives: /var/_install
