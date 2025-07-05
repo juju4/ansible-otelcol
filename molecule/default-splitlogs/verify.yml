@@ -79,7 +79,7 @@
       changed_when: false
       failed_when: false
       register: errors
-    - name: Validate no errors
+    - name: Validate no errors (prio)
       ansible.builtin.assert:
         that:
           - "'ERROR' not in errors.stdout"
@@ -92,7 +92,7 @@
       changed_when: false
       failed_when: false
       register: errors
-    - name: Validate no errors
+    - name: Validate no errors (grep)
       ansible.builtin.assert:
         that:
           - "'ERROR' not in errors.stdout"

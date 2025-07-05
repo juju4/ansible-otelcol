@@ -36,7 +36,7 @@
   ansible.builtin.include_tasks: download.yml
   vars:
     dl_url: "{{ otelcol_sig }}"
-    dl_dest: "{{ install_archives }}/{{ otelcol_sig| basename }}"
+    dl_dest: "{{ install_archives }}/{{ otelcol_sig | basename }}"
 
 - name: Verify Otel collector download
   ansible.builtin.command:
