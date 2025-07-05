@@ -110,5 +110,16 @@
     - name: Debug | var ansible_virtualization_type
       ansible.builtin.debug:
         var: ansible_virtualization_type
+    - name: Touch files to avoid otelcol warn/error messages
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: touch
+        mode: '0644'
+        owner: root
+      loop:
+        - /var/log/mail.log
+        - /var/log/mail.err
+        - /var/log/iptables/iptables.log
+        - /var/log/iptables/ip6tables.log
   roles:
     - juju4.otelcol
