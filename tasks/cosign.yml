@@ -18,3 +18,4 @@
       ansible.builtin.dnf:
         name: "{{ cosign_url }}"
         state: present
+        disable_gpg_check: "{{ otelcol_cosign_rpm_disable_gpg_check | default(false) }}"
