@@ -1,3 +1,3 @@
 ---
 
-cosign_url: "https://github.com/sigstore/cosign/releases/download/{{ cosign_version }}/cosign-{{ cosign_version }}{{ cosign_patchlevel | default('') }}_{{ cosign_arch }}.rpm"
+cosign_url: "https://github.com/sigstore/cosign/releases/download/v{{ cosign_version }}/cosign-{{ cosign_version }}{{ cosign_patchlevel | default('-1') }}.{{ cosign_arch }}.rpm"
