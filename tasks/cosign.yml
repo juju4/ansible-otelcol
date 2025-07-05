@@ -16,5 +16,5 @@
   block:
     - name: RedHat Install cosign rpm
       ansible.builtin.dnf:
-        name: "{{ install_archives }}/{{ cosign_url | basename }}"
+        name: "{{ cosign_url }}"
         state: present
