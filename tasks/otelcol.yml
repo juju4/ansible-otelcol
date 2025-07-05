@@ -150,6 +150,7 @@
     that:
       - "'Unauthenticated' not in otel_journal.stdout"
       - "'Permission denied' not in otel_journal.stdout"
+      - "'error' not in otel_journal.stdout"
   when:
     - not is_container | bool
     - otelcol_errors_validation | bool
