@@ -110,6 +110,11 @@
     - name: Debug | var ansible_virtualization_type
       ansible.builtin.debug:
         var: ansible_virtualization_type
+    - name: Ensure logs dir exists
+      ansible.builtin.file:
+        path: /var/log/iptables
+        state: directory
+        mode: '0755'
     - name: Touch files to avoid otelcol warn/error messages
       ansible.builtin.file:
         path: "{{ item }}"
