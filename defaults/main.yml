@@ -10,6 +10,11 @@ otelcol_user_groups:
   - "{{ otelcol_user }}"
 
 otelcol_filelog_include: [ /var/log/**log ]
+otelcol_acl:
+  - { path: /var/log,
+      perm: rx,
+      recursive: true
+  }
 otelcol_debug_enable: false
 otelcol_sampling_enable: false
 # additional configuration (yaml input)
