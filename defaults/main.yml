@@ -38,7 +38,10 @@ openobserve_root_user_pass:
 openobserve_server_ansible_host:
 openobserve_server_crt_filepath: /etc/ssl/certs/OOSERVER.crt
 
+# auth or permission error
 otelcol_errors_validation: true
+# any error pattern
+otelcol_errors_validation2: true
 
 cosign_version: 2.5.2
 # cosign_hash:  # depending on architecture
