@@ -21,6 +21,8 @@
     line: "{{ otelcol_server_crt_filepath | basename | regex_replace('.crt', '-otelcol-server.crt') }}"
     mode: '0644'
     owner: root
+  when:
+    - otelcol_server_crt_filepath is defined
 
 - name: Update-ca-certificates
   ansible.builtin.command:  # noqa no-changed-when
