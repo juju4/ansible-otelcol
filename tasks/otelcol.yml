@@ -70,7 +70,8 @@
       otelcol_server_ansible_host != None)
     - openobserve_root_user_email is defined
     - openobserve_root_user_pass is defined
-    - (otelcol_auth_key is not defined or otelcol_auth_key == None or not otelcol_auth_key | string)
+    - (otelcol_auth_key is not defined or otelcol_auth_key == None or not otelcol_auth_key | length > 0)
+    - otelcol_server_ansible_host | length > 0
 
 - name: Configure Otel collector
   ansible.builtin.template:
@@ -118,7 +119,8 @@
   when:
     - otelcol_get_certificate | bool
     - otelcol_server_crt_filepath is defined
-    - otelcol_server_crt_filepath | string
+    - otelcol_server_crt_filepath | length > 0
+    - otelcol_server_ansible_host | length > 0
   block:
     - name: Fetch server certificate
       ansible.builtin.fetch:
