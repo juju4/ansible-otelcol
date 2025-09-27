@@ -56,8 +56,8 @@ otelcol_auth_key_retrieve: true
 otelcol_get_certificate: false
 # openobserve_root_user_email:
 # openobserve_root_user_pass:
-# openobserve_server_ansible_host:
-# openobserve_server_crt_filepath: /etc/ssl/certs/OOSERVER.crt
+# otelcol_server_ansible_host:
+# otelcol_server_crt_filepath: /etc/ssl/certs/OOSERVER.crt
 
 install_archives: /var/_install
 ```
