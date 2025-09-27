@@ -35,7 +35,7 @@ otelcol_auth_key:
 otelcol_get_certificate: false
 openobserve_root_user_email:
 openobserve_root_user_pass:
-openobserve_server_ansible_host:
+openobserve_server_ansible_host: changeme
 openobserve_server_crt_filepath: /etc/ssl/certs/OOSERVER.crt
 
 # auth or permission error
