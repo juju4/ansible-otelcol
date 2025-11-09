@@ -3,7 +3,7 @@
 receivers:
   # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/journaldreceiver
   journald:
-    directory: /var/log/journal/**/*
+    directory: /var/log/journal
 {% if otelcol_journald_extras %}
     {{ otelcol_journald_extras | to_nice_yaml(indent=0,sort_keys=False) | indent(4, False) }}
 {% endif %}
