@@ -2,7 +2,7 @@
 
 # "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelcol_version }}/otelcol-contrib_{{ otelcol_otel_version }}_{{ ansible_system | lower }}_{{ otelcol_arch }}.tar.gz"
 # renovate: datasource=github-releases depName=open-telemetry/opentelemetry-collector-releases
-otelcol_github_version: 'v0.139.0'
+otelcol_github_version: 'v0.140.1'
 otelcol_version: "{{ otelcol_github_version | regex_replace('^v', '') }}"
 # otelcol_hash: 'sha256:fd91a7ebefb529c14282ed7bcbc61ec2c3b0d81d5c114062cb898c72788caaeb'
 otelcol_config_template: otel-config.yaml
