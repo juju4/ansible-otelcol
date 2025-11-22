@@ -46,7 +46,7 @@ otelcol_errors_validation: true
 otelcol_errors_validation2: true
 
 # renovate: datasource=github-releases depName=sigstore/cosign
-cosign_github_version: 'v2.6.1'
+cosign_github_version: 'v3.0.2'
 cosign_version: "{{ cosign_github_version | regex_replace('^v', '') }}"
 # cosign_hash:  # depending on architecture
 is_container: false
