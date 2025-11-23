@@ -33,6 +33,12 @@
       when: >
         (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int >= 16) or
         (ansible_os_family == "RedHat" and ansible_distribution_major_version | int >= 8)
+    - name: Ubuntu 24.04 | Set fact
+      ansible.builtin.set_fact:
+        # error        journald/input.go:98        journalctl command exited        {\"resource\": {\"service.instance.id\": \"bff6dbc0-c319-4f66-a518-f416cbf9b394\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.140.1\"}, \"otelcol.component.id\": \"journald\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"operator_id\": \"journald_input\", \"operator_type\": \"journald_input\", \"error\": \"signal: terminated\"}",
+        otelcol_errors_validation2: false
+      when:
+        - (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int >= 24)
     - name: Debian | Refresh apt cache
       ansible.builtin.apt:
         update_cache: yes
