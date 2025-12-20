@@ -13,6 +13,7 @@
         mode: "{{ dl_mode | default('0600') }}"
         owner: root
         checksum: "{{ dl_hash | default(omit) }}"
+      environment: "{{ proxy_env | default(omit) }}"
   rescue:
     - name: Download from orchestrator {{ dl_url | basename }}
       ansible.builtin.get_url:
@@ -20,6 +21,7 @@
         dest: "/tmp/{{ dl_url | basename }}"
         mode: '0600'
         checksum: "{{ dl_hash | default(omit) }}"
+      environment: "{{ proxy_env_orchestrator | default(omit) }}"
     - name: Copy to target
       ansible.builtin.copy:
         src: "/tmp/{{ dl_url | basename }}"
