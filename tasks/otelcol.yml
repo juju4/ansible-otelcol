@@ -15,9 +15,9 @@
 
 - name: Set fact
   ansible.builtin.set_fact:
-    otelcol_url: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelcol_version }}/otelcol-contrib_{{ otelcol_version }}_{{ ansible_system | lower }}_{{ otelcol_arch }}.tar.gz"
-    otelcol_pem: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelcol_version }}/otelcol-contrib_{{ otelcol_version }}_{{ ansible_system | lower }}_{{ otelcol_arch }}.tar.gz.pem"
-    otelcol_sig: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelcol_version }}/otelcol-contrib_{{ otelcol_version }}_{{ ansible_system | lower }}_{{ otelcol_arch }}.tar.gz.sig"
+    otelcol_url: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelcol_version }}/otelcol-contrib_{{ otelcol_version }}_{{ ansible_facts['system'] | lower }}_{{ otelcol_arch }}.tar.gz"
+    otelcol_pem: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelcol_version }}/otelcol-contrib_{{ otelcol_version }}_{{ ansible_facts['system'] | lower }}_{{ otelcol_arch }}.tar.gz.pem"
+    otelcol_sig: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelcol_version }}/otelcol-contrib_{{ otelcol_version }}_{{ ansible_facts['system'] | lower }}_{{ otelcol_arch }}.tar.gz.sig"
 
 - name: Download Otel collector
   ansible.builtin.include_tasks: download.yml

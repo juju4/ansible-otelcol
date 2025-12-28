@@ -5,41 +5,41 @@
     otelcol_arch: amd64
     cosign_arch: amd64
   when:
-    - ansible_architecture == 'x86_64'
-    - ansible_os_family == 'Debian'
+    - ansible_facts['architecture'] == 'x86_64'
+    - ansible_facts['os_family'] == 'Debian'
 - name: RedHat | X86_64 arch
   ansible.builtin.set_fact:
     otelcol_arch: amd64
     cosign_arch: x86_64
   when:
-    - ansible_architecture == 'x86_64'
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['architecture'] == 'x86_64'
+    - ansible_facts['os_family'] == 'RedHat'
 - name: Aarch64 arch
   ansible.builtin.set_fact:
     otelcol_arch: arm64
     cosign_arch: arm64
-  when: ansible_architecture == 'aarch64'
+  when: ansible_facts['architecture'] == 'aarch64'
 - name: Armv7l arch
   ansible.builtin.set_fact:
     otelcol_arch: armv7
     cosign_arch: armhf
-  when: ansible_architecture == 'armv7l'
+  when: ansible_facts['architecture'] == 'armv7l'
 - name: Debug
   ansible.builtin.debug:
     var: "{{ item }}"
   loop:
-    - ansible_system
-    - ansible_architecture
+    - ansible_facts['system']
+    - ansible_facts['architecture']
 
 - name: Include variables
   ansible.builtin.include_vars: "{{ lookup('ansible.builtin.first_found', params) }}"
   vars:
     params:
       files:
-        - "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
-        - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
-        - '{{ ansible_distribution }}.yml'
-        - '{{ ansible_os_family }}.yml'
+        - "{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_version'] }}.yml"
+        - "{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_major_version'] }}.yml"
+        - "{{ ansible_facts['distribution'] }}.yml"
+        - "{{ ansible_facts['os_family'] }}.yml"
       paths:
         - 'vars'
 
@@ -47,10 +47,10 @@
   ansible.builtin.set_fact:
     is_container: true
   when: >
-    (ansible_virtualization_type is defined and
-      (ansible_virtualization_type == "docker"
-       or ansible_virtualization_type == "containerd"
-       or ansible_virtualization_type == "container"
+    (ansible_facts['virtualization_type'] is defined and
+      (ansible_facts['virtualization_type'] == "docker"
+       or ansible_facts['virtualization_type'] == "containerd"
+       or ansible_facts['virtualization_type'] == "container"
       )
     )
 
@@ -58,7 +58,7 @@
   ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: "3600"
-  when: ansible_os_family == 'Debian'
+  when: ansible_facts['os_family'] == 'Debian'
   register: pkg_result
   until: pkg_result is success
 
