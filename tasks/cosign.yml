@@ -1,9 +1,23 @@
 ---
 # cosign_version: v2.5.2
 
+- name: Gather package facts
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Get cosign version
+  ansible.builtin.set_fact:
+    cosign_v: "{{ ansible_facts.packages['cosign'][0]['version'] }}"
+
+- name: Debug | cosign installed version
+  ansible.builtin.debug:
+    var: cosign_v
+    verbosity: 1
+
 - name: Debian | cosign
   when:
     - ansible_facts['os_family'] == 'Debian'
+    - cosign_version | string is version_compare(cosign_v, '>')
   block:
     - name: Debian | Install cosign deb
       ansible.builtin.apt:
@@ -13,6 +27,7 @@
 - name: RedHat | cosign
   when:
     - ansible_facts['os_family'] == 'RedHat'
+    - cosign_version | string is version_compare(cosign_v, '>')
   block:
     - name: RedHat Install cosign rpm
       ansible.builtin.dnf:
