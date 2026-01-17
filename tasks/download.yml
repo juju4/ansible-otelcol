@@ -23,6 +23,7 @@
         checksum: "{{ dl_hash | default(omit) }}"
       environment: "{{ proxy_env_orchestrator | default(omit) }}"
       delegate_to: localhost
+      become: no
     - name: Copy to target
       ansible.builtin.copy:
         src: "/tmp/{{ dl_url | basename }}"
