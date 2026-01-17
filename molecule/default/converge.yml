@@ -17,35 +17,35 @@
       ansible.builtin.raw: test -e /usr/bin/python3 || (apt -y update && apt install -y python3-minimal)
       register: python3
       changed_when: "'installed' in python3.stdout"
-      when: (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int >= 16)
+      when: (ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_major_version'] | int >= 16)
     - name: RedHat | Install python3
       ansible.builtin.raw: test -e /usr/bin/python3 || (yum install -y python3)
       register: python3
       changed_when: "'installed' in python3.stdout"
-      when: (ansible_os_family == "RedHat" and ansible_distribution_major_version | int >= 8)
+      when: (ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution_major_version'] | int >= 8)
     - name: Gather Facts
       ansible.builtin.setup:
-      when: (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int >= 16)
+      when: (ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_major_version'] | int >= 16)
     - name: Ubuntu Bionic+, Redhat 8+ | Enforce python3 for ansible
       ansible.builtin.set_fact:
         ansible_python_interpreter: /usr/bin/python3
         otelcol_cosign_rpm_disable_gpg_check: true
       when: >
-        (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int >= 16) or
-        (ansible_os_family == "RedHat" and ansible_distribution_major_version | int >= 8)
+        (ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_major_version'] | int >= 16) or
+        (ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution_major_version'] | int >= 8)
     - name: Ubuntu 24.04 | Set fact
       ansible.builtin.set_fact:
         # error        journald/input.go:98        journalctl command exited        {\"resource\": {\"service.instance.id\": \"bff6dbc0-c319-4f66-a518-f416cbf9b394\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.140.1\"}, \"otelcol.component.id\": \"journald\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"operator_id\": \"journald_input\", \"operator_type\": \"journald_input\", \"error\": \"signal: terminated\"}",
         otelcol_errors_validation2: false
       when:
-        - (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int >= 24)
+        - (ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_major_version'] | int >= 24)
     - name: Debian | Refresh apt cache
       ansible.builtin.apt:
         update_cache: yes
         cache_valid_time: 3600
-      when: ansible_os_family == "Debian"
-    - name: Debug | var ansible_virtualization_type
+      when: ansible_facts['os_family'] == "Debian"
+    - name: Debug | var ansible_facts['virtualization_type']
       ansible.builtin.debug:
-        var: ansible_virtualization_type
+        var: ansible_facts['virtualization_type']
   roles:
     - juju4.otelcol
