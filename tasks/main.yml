@@ -19,6 +19,10 @@
     otelcol_arch: arm64
     cosign_arch: arm64
   when: ansible_facts['architecture'] == 'aarch64'
+- name: Armv6l arch
+  ansible.builtin.fail:
+    msg: "FATAL! otecol does not support armv6l"
+  when: ansible_facts['architecture'] == 'armv6l'
 - name: Armv7l arch
   ansible.builtin.set_fact:
     otelcol_arch: armv7
