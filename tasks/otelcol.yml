@@ -90,15 +90,47 @@
     name: systemd
     state: present
 
-- name: Configure Otel collector systemd unit
-  ansible.builtin.template:
-    src: systemd-otel-collector.service.j2
-    dest: /etc/systemd/system/otel-collector.service
-    mode: '0644'
-    owner: root
-  notify:
-    - Reload systemd
-    - Restart otel-collector
+- name: Systemd
+  block:
+    - name: Configure Otel collector systemd unit
+      ansible.builtin.template:
+        src: systemd-otel-collector.service.j2
+        dest: /etc/systemd/system/otel-collector.service
+        mode: '0644'
+        owner: root
+      notify:
+        - Reload systemd
+        - Restart otel-collector
+  rescue:
+    - name: Import immutable
+      ansible.builtin.import_tasks: immutable.yml
+      vars:
+        target_dir: /etc/systemd/system
+        state: pre
+    - name: Import immutable
+      ansible.builtin.import_tasks: immutable.yml
+      vars:
+        target_dir: "/etc/systemd/system/otel-collector.service"
+        state: pre
+    - name: Configure Otel collector systemd unit (immutable)
+      ansible.builtin.template:
+        src: systemd-otel-collector.service.j2
+        dest: /etc/systemd/system/otel-collector.service
+        mode: '0644'
+        owner: root
+      notify:
+        - Reload systemd
+        - Restart otel-collector
+    - name: Import immutable
+      ansible.builtin.import_tasks: immutable.yml
+      vars:
+        target_dir: /etc/systemd/system
+        state: post
+    - name: Import immutable
+      ansible.builtin.import_tasks: immutable.yml
+      vars:
+        target_dir: "/etc/systemd/system/otel-collector.service"
+        state: post
 
 - name: Ensure acl package is present
   ansible.builtin.package:
