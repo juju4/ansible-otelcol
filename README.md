@@ -1,7 +1,7 @@
-[![Actions Status - Master](https://github.com/juju4/ansible-otelcol/workflows/AnsibleCI/badge.svg)](https://github.com/juju4/ansible-otelcol/actions?query=branch%3Amain)
-[![Actions Status - Devel](https://github.com/juju4/ansible-otelcol/workflows/AnsibleCI/badge.svg?branch=devel)](https://github.com/juju4/ansible-otelcol/actions?query=branch%3Adevel)
-
 # OpenTelemetry Collector ansible role
+
+[![Actions Status - Main](https://github.com/juju4/ansible-otelcol/workflows/AnsibleCI/badge.svg)](https://github.com/juju4/ansible-otelcol/actions?query=branch%3Amain)
+[![Actions Status - Devel](https://github.com/juju4/ansible-otelcol/workflows/AnsibleCI/badge.svg?branch=devel)](https://github.com/juju4/ansible-otelcol/actions?query=branch%3Adevel)
 
 Setup OpenTelemetry collector
 * https://github.com/open-telemetry/opentelemetry-collector-contrib
